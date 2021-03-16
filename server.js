@@ -6,7 +6,7 @@ const { v4 : uuid } = require('uuid');
 
 const PORT = process.env.port || 3000;
 
-const todos = [
+let todos = [
   {
     id: uuid(),
     name: 'Taste Javascript',
@@ -18,6 +18,9 @@ const todos = [
     done: false
   }
 ];
+
+
+const getItemsLeft = () => todos.filter(t => !t.done).length;
 
 const app = express();
 app.set('view engine', 'pug');
@@ -44,8 +47,7 @@ app.get('/', (req, res) => {
       filteredTodos = todos;
   }
 
-  const itemsLeft = todos.filter(t => !t.done).length;
-  res.render('index', { todos: filteredTodos, filter, itemsLeft });
+  res.render('index', { todos: filteredTodos, filter, itemsLeft: getItemsLeft() });
 });
 
 app.post('/todos', (req, res) => {
@@ -56,8 +58,20 @@ app.post('/todos', (req, res) => {
     done: false 
   };
   todos.push(newTodo);
-  const template = pug.compileFile('views/includes/todo-item.pug');
-  const markup = template({ todo: newTodo});
+  let template = pug.compileFile('views/includes/todo-item.pug');
+  let markup = template({ todo: newTodo});
+  template = pug.compileFile('views/includes/item-count.pug');
+  markup  += template({ itemsLeft: getItemsLeft()});
+  res.send(markup);
+});
+
+app.get('/todos/edit/:id', (req, res) => {
+  const { id } = req.params;
+  const todo = todos.find(t => t.id === id);
+  let template = pug.compileFile('views/includes/edit-item.pug');
+  let markup = template({ todo });
+  //template = pug.compileFile('views/includes/item-count.pug');
+  //markup  += template({ itemsLeft: getItemsLeft()});
   res.send(markup);
 });
 
@@ -65,8 +79,22 @@ app.patch('/todos/:id', (req, res) => {
   const { id } = req.params;
   const todo = todos.find(t => t.id === id);
   todo.done = !todo.done;
-  const template = pug.compileFile('views/includes/todo-item.pug');
-  const markup = template({ todo });
+  let template = pug.compileFile('views/includes/todo-item.pug');
+  let markup = template({ todo });
+  template = pug.compileFile('views/includes/item-count.pug');
+  markup  += template({ itemsLeft: getItemsLeft()});
+  res.send(markup);
+});
+
+app.post('/todos/update/:id', (req, res) => {
+  const { id } = req.params;
+  const { name } = req.body;
+  const todo = todos.find(t => t.id === id);
+  todo.name = name;
+  let template = pug.compileFile('views/includes/todo-item.pug');
+  let markup = template({ todo });
+  template = pug.compileFile('views/includes/item-count.pug');
+  markup  += template({ itemsLeft: getItemsLeft()});
   res.send(markup);
 });
 
@@ -74,7 +102,19 @@ app.delete('/todos/:id', (req,res) => {
   const { id } = req.params;
   const idx = todos.find(t => t === id);
   todos.splice(idx, 1);
-  res.send('success');
+  const template = pug.compileFile('views/includes/item-count.pug');
+  const markup  = template({ itemsLeft: getItemsLeft()});
+  res.send(markup);
+});
+
+app.post('/todos/clear-completed', (req, res) => {
+  const newTodos = todos.filter(t => !t.done);
+  todos = [...newTodos];
+  let template = pug.compileFile('views/includes/todo-list.pug');
+  let markup = template({ todos });
+  template = pug.compileFile('views/includes/item-count.pug');
+  markup  += template({ itemsLeft: getItemsLeft()});
+  res.send(markup);
 });
 
 app.listen(PORT);

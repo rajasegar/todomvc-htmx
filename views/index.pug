@@ -12,13 +12,13 @@ html(lang='en')
     section.todoapp
       header.header
         h1 todos
-        form(hx-post="/todos", hx-target=".todo-list", hx-swap="afterbegin")
-          input.new-todo(name="todo",placeholder='What needs to be done?', autofocus='')
+        form(hx-post="/todos", hx-target="#todo-list", hx-swap="afterbegin", _="on htmx:afterOnLoad set #txtTodo.value to ''")
+          input#txtTodo.new-todo(name="todo",placeholder='What needs to be done?', autofocus='')
       // This section should be hidden by default and shown when there are todos
       section.main
         input#toggle-all.toggle-all(type='checkbox')
         label(for='toggle-all') Mark all as complete
-        ul.todo-list
+        ul#todo-list.todo-list
           // These are here just to show the structure of the list items
           // List items should get the class `editing` when editing and `completed` when marked as completed
           each todo in todos
@@ -27,9 +27,7 @@ html(lang='en')
       // This footer should be hidden by default and shown when there are todos
       footer.footer
         // This should be `0 items left` by default
-        span.todo-count
-          strong #{itemsLeft}
-          |  item left
+        include includes/item-count
         // Remove this if you don't implement routing
         ul.filters
           li
@@ -39,9 +37,9 @@ html(lang='en')
           li
             a(href='/?filter=completed', class={selected: filter === 'completed'}) Completed
         // Hidden if no completed items are left ↓
-        button.clear-completed Clear completed
+        button.clear-completed(hx-post="/todos/clear-completed", hx-target='#todo-list') Clear completed
     footer.info
-      p Double-click to edit a todo
+      p Click to edit a todo
       // Remove the below line ↓
       p
         | Template by 
@@ -49,7 +47,7 @@ html(lang='en')
       // Change this out with your name and url ↓
       p
         | Created by 
-        a(href='http://todomvc.com') you
+        a(href='https://twitter.com/rajasegar_c') Rajasegar Chandran
       p
         | Part of 
         a(href='http://todomvc.com') TodoMVC
