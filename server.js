@@ -19,7 +19,6 @@ let todos = [
   }
 ];
 
-
 const getItemsLeft = () => todos.filter(t => !t.done).length;
 
 const app = express();
