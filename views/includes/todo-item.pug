@@ -1,0 +1,7 @@
+li(class={completed: todo.done === true})
+  .view
+    input.toggle(type='checkbox', checked=todo.done)
+    label= todo.name
+    button.destroy
+  input.edit(value=todo.name)
+
