@@ -9,7 +9,7 @@ const PORT = process.env.port || 3000;
 let todos = [
   {
     id: uuid(),
-    name: 'Taste Javascript',
+    name: 'Taste htmx',
     done: true
   },
   {
