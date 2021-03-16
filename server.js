@@ -69,8 +69,6 @@ app.get('/todos/edit/:id', (req, res) => {
   const todo = todos.find(t => t.id === id);
   let template = pug.compileFile('views/includes/edit-item.pug');
   let markup = template({ todo });
-  //template = pug.compileFile('views/includes/item-count.pug');
-  //markup  += template({ itemsLeft: getItemsLeft()});
   res.send(markup);
 });
 
