@@ -3,6 +3,8 @@
 > htmx - high power tools for HTML
 
 
+![todomvc htmx demo gif](todomvc-htmx.gif)
+
 ## Resources
 
 - [Website](https://htmx.org)
